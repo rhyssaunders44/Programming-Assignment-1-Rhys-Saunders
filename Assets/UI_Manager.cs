@@ -6,21 +6,28 @@ using UnityEngine.UI;
 public class UI_Manager : MonoBehaviour
 {
     public UpgradeType[] upgrade = new UpgradeType[4];
+
+    //struct for each upgrade. saves space
     public struct UpgradeType
     {
         public int baseCost;
         public int multiplier;
     }
 
+    // each upgrade type
     public UpgradeType single;
     public UpgradeType plusTwo;
     public UpgradeType plusFive;
     public UpgradeType perSecond;
 
+    //your money in game
     public int cookieMoney;
 
+    // UI text arrays
     public Text[] Cost;
     public Text[] timesBought;
+
+    //non-array texts.
     public Text totalCookies;
     public Text upgradeDenier;
     public int index;
@@ -32,6 +39,7 @@ public class UI_Manager : MonoBehaviour
 
     void Start()
     {
+        //Upgrageinitialization region contains all the initialisation for each upgrade
         #region Upgradeinitialization
         single = new UpgradeType();
         single.baseCost = 15;
@@ -55,21 +63,22 @@ public class UI_Manager : MonoBehaviour
 
         #endregion
 
+        //each upgrade button starts off inactive. yes this can be rewritten to be inclusive of each member of the array.
+        //this is what youre getting.
         gameButton[0].SetActive(false);
         gameButton[1].SetActive(false);
         gameButton[2].SetActive(false);
         gameButton[3].SetActive(false);
 
+        //special text
+        upgradeDenier.text = "Beginning Cookie Experience...";
         totalCookies.text = "Total Cookies:" + cookieMoney.ToString();
 
-        Cost[0].text = "Cost: " + PriceDeductor(single.baseCost, single.multiplier).ToString();
-        Cost[1].text = "Cost: " + PriceDeductor(plusTwo.baseCost, plusTwo.multiplier).ToString();
-        Cost[2].text = "Cost: " + PriceDeductor(plusFive.baseCost, plusFive.multiplier).ToString();
-
-        upgradeDenier.text = "Beginning Cookie Experience...";
+        // might as well have index as 0.
         index = 0;
     }
 
+    // the single click increaser
     public void Single()
     {
         index = 0;
@@ -86,6 +95,7 @@ public class UI_Manager : MonoBehaviour
 
     }
 
+    // 2 additional clicks per buy
     public void PlusTwo()
     {
         index = 1;
@@ -101,6 +111,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    // 5 additional clicks per buy
     public void PlusFive()
     {
         index = 2;
@@ -116,6 +127,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    // 1 click per second per buy
     public void PerSecond()
     {
         index = 3;
@@ -134,12 +146,14 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    //neccessary for the MoneyTick coroutine used in the Persecond buy
     public void AddSingle()
     {
         cookieMoney++;
         totalCookies.text = "Total Cookies:" + cookieMoney.ToString();
     }
 
+    //enables the upgrade when you have enough money to buy it
     public void UpgradeEnabler(int indexNumber, int changer)
     {
         if(cookieMoney > indexNumber)
@@ -148,6 +162,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    //changes the colour of the text based on if you can buy the upgrade or not
     public void TextColourChanger(int index)
     {
         if (cookieMoney < PriceDeductor(upgrade[index].baseCost, upgrade[index].multiplier + 1))
@@ -160,6 +175,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    //calculates how much money to take off the money count
     public int PriceDeductor(int baseCost, int buyNumber)
     {
         float deduction;
@@ -167,6 +183,7 @@ public class UI_Manager : MonoBehaviour
         return (int)deduction;
     }
 
+    //changes the upgrade price to the new one on click
     public void PriceChanger()
     {
         upgrade[index].multiplier++;
@@ -176,6 +193,7 @@ public class UI_Manager : MonoBehaviour
         totalCookies.text = "Total Cookies:" + cookieMoney.ToString();
     }
 
+    //returns how many cookies the counter has
     public void TotalCookies()
     {
         cookieMoney = cookieMoney + 1 + upgrade[0].multiplier + (2 * upgrade[1].multiplier) + (5 * upgrade[2].multiplier);
@@ -193,6 +211,7 @@ public class UI_Manager : MonoBehaviour
         upgradeDenier.text = "MOAR COOKIE!!!";
     }
 
+    //a coroutine to add 1 every second to the money count
     IEnumerator MoneyTick (float repeatTime)
     {
         while (perSecondTick)
@@ -206,6 +225,7 @@ public class UI_Manager : MonoBehaviour
         }
     }
 
+    //quit button.
     void Update()
     {
         if (Input.GetKey("escape"))
